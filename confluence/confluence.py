@@ -106,9 +106,9 @@ class Confluence(object):
         "verify": True
     }
 
-    def __init__(self, profile=None, url="http://localhost:8090/", username=None, password=None, appid=None, debug=False):
+    def __init__(self, profile=None, url="http://localhost:8090/", username=None, password=None, appid=None, debug=False, config_ini='config.ini'):
         """
-        Returns a Confluence object by loading the connection details from the `config.ini` file.
+        Returns a Confluence object by loading the connection details from the config_ini (defaults to `config.ini`) file.
 
         :param profile: The name of the section from config.ini file that stores server config url/username/password
         :type  profile: ``str``
@@ -121,6 +121,9 @@ class Confluence(object):
 
         :param password: password to use for authentication
         :type  password: ``str``
+
+        :param config_ini: path to the config ini file to use for reading settings.
+        :type  config_ini: ``str``
 
         :return: Confluence -- an instance to a Confluence object.
         :raises: EnvironmentError
@@ -158,7 +161,7 @@ class Confluence(object):
 
         config = ConfigParser.SafeConfigParser(defaults={'user': username, 'pass': password, 'appid': appid})
 
-        config_file = findfile('config.ini')
+        config_file = findfile(config_ini)
         if debug: print(config_file)
 
         if not profile:
@@ -177,7 +180,7 @@ class Confluence(object):
                 password = config.get(profile, 'pass')
                 appid = config.get(profile, 'appid')
             else:
-                raise EnvironmentError("%s was not able to locate the config.ini file in current directory, user home directory or PYTHONPATH." % __name__)
+                raise EnvironmentError("%s was not able to locate the %s file in current directory, user home directory or PYTHONPATH." % (__name__, config_ini))
 
         options = Confluence.DEFAULT_OPTIONS
         options['server'] = url
